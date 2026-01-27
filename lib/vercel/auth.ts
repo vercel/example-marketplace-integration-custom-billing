@@ -78,6 +78,7 @@ function getAuthorizationToken(req: Request): string {
     throw new AuthError("Invalid Authorization header");
   }
 
+  console.log("[DEBUG] Received JWT token:", match[1]);
   return match[1];
 }
 
