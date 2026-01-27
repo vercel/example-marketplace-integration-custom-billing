@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { env } from "../env";
 import { JWTExpired, JWTInvalid } from "jose/errors";
+import { NextRequest, NextResponse } from "next/server";
+import { env } from "../env";
 
 const JWKS = createRemoteJWKSet(
   new URL(`https://marketplace.vercel.com/.well-known/jwks`),
@@ -78,7 +78,9 @@ function getAuthorizationToken(req: Request): string {
     throw new AuthError("Invalid Authorization header");
   }
 
-  console.log("[DEBUG] Received JWT token:", match[1]);
+  // For logging and fetching JWT for quick testing
+  // console.log("[DEBUG] Received JWT token:", match[1]);
+
   return match[1];
 }
 
