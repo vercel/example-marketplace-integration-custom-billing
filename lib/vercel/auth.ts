@@ -114,6 +114,11 @@ function getAuthorizationToken(req: Request): string {
   // For logging and fetching JWT for quick testing
   console.log("[DEBUG] Received JWT token:", match[1]);
 
+  // Parse and log JWT payload (base64url decode the middle part)
+  const [, payload] = match[1].split(".");
+  const decoded = JSON.parse(Buffer.from(payload, "base64url").toString());
+  console.log("[DEBUG] Decoded JWT claims:", decoded);
+
   return match[1];
 }
 
