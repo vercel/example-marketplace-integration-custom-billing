@@ -21,6 +21,33 @@ export interface OidcClaims {
   user_avatar_url?: string;
 }
 
+// Dev-mode mock claims for local testing without a real JWT
+// Use header: X-Dev-Installation-Id to specify the installation ID
+function getDevModeClaims(req: NextRequest): OidcClaims | null {
+  if (process.env.NODE_ENV !== "development") {
+    return null;
+  }
+
+  const devInstallationId = req.headers.get("X-Dev-Installation-Id");
+  if (!devInstallationId) {
+    return null;
+  }
+
+  console.log("[DEV MODE] Using mock claims for installation:", devInstallationId);
+  return {
+    sub: "dev:user:123",
+    aud: env.INTEGRATION_CLIENT_ID,
+    iss: "https://marketplace.vercel.com",
+    exp: Math.floor(Date.now() / 1000) + 3600,
+    iat: Math.floor(Date.now() / 1000),
+    account_id: "dev_account_123",
+    installation_id: devInstallationId,
+    user_id: "dev_user_123",
+    user_role: "ADMIN",
+    user_name: "Dev User",
+  };
+}
+
 export function withAuth(
   callback: (
     claims: OidcClaims,
@@ -30,6 +57,12 @@ export function withAuth(
 ): (req: NextRequest, ...rest: any[]) => Promise<Response> {
   return async (req: NextRequest, ...rest: any[]): Promise<Response> => {
     try {
+      // Check for dev mode bypass first
+      const devClaims = getDevModeClaims(req);
+      if (devClaims) {
+        return callback(devClaims, req, ...rest);
+      }
+
       const token = getAuthorizationToken(req);
       const claims = await verifyToken(token);
 
