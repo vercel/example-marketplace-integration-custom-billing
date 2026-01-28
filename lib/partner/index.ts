@@ -87,8 +87,6 @@ const billingPlans: BillingPlan[] = [
   },
 ];
 
-const billingPlanMap = new Map(billingPlans.map((plan) => [plan.id, plan]));
-
 // Custom billing plans for specific installations
 // These are installation-specific plans that override the default plans
 const customBillingPlan: BillingPlan[] = [
@@ -114,6 +112,11 @@ const customBillingPlan: BillingPlan[] = [
     effectiveDate: "2021-01-01T00:00:00Z",
   },
 ];
+
+// Include both standard and custom billing plans in the lookup map
+const billingPlanMap = new Map(
+  [...billingPlans, ...customBillingPlan].map((plan) => [plan.id, plan])
+);
 
 export async function installIntegration(
   installationId: string,
