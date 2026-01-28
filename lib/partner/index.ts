@@ -555,7 +555,10 @@ export async function getResourceBillingPlans(
   _installationId: string,
   _resourceId: string,
 ): Promise<GetBillingPlansResponse> {
-  return { plans: billingPlans };
+  const extendedBillingPlans = customBillingPlanConfigurations.has(_installationId)
+    ? billingPlans.concat(customBillingPlan)
+    : billingPlans;
+  return { plans: extendedBillingPlans };
 }
 
 export async function getInstallation(installationId: string): Promise<
