@@ -112,7 +112,7 @@ function getAuthorizationToken(req: Request): string {
   }
 
   // For logging and fetching JWT for quick testing
-  // console.log("[DEBUG] Received JWT token:", match[1]);
+  console.log("[DEBUG] Received JWT token:", match[1]);
 
   return match[1];
 }
