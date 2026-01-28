@@ -1,25 +1,25 @@
+import { compact } from "lodash";
 import { nanoid } from "nanoid";
 import type {
+  Balance,
   BillingPlan,
   GetBillingPlansResponse,
   GetResourceResponse,
   InstallIntegrationRequest,
   ListResourcesResponse,
+  Notification,
+  ProvisionPurchaseRequest,
+  ProvisionPurchaseResponse,
   ProvisionResourceRequest,
   ProvisionResourceResponse,
   Resource,
+  ResourceStatusType,
+  Claim as TransferRequest,
+  UnknownWebhookEvent,
   UpdateResourceRequest,
   UpdateResourceResponse,
-  Notification,
   WebhookEvent,
-  UnknownWebhookEvent,
-  ProvisionPurchaseRequest,
-  ProvisionPurchaseResponse,
-  Balance,
-  Claim as TransferRequest,
-  ResourceStatusType,
 } from "@/lib/vercel/schemas";
-import { compact } from "lodash";
 import { kv } from "../redis";
 import {
   getInvoice,
@@ -88,6 +88,32 @@ const billingPlans: BillingPlan[] = [
 ];
 
 const billingPlanMap = new Map(billingPlans.map((plan) => [plan.id, plan]));
+
+// Custom billing plans for specific installations
+// These are installation-specific plans that override the default plans
+const customBillingPlan: BillingPlan[] = [
+  {
+    id: "custom-enterprise",
+    scope: "installation",
+    name: "Enterprise Custom",
+    cost: "$500/month",
+    type: "subscription",
+    description: "Custom enterprise plan with dedicated support",
+    paymentMethodRequired: true,
+    preauthorizationAmount: 50,
+    highlightedDetails: [
+      { label: "High availability", value: "Multi-region" },
+      { label: "Dataset size", value: "Unlimited" },
+      { label: "Support", value: "24/7 Dedicated" },
+    ],
+    details: [
+      { label: "Unlimited storage", value: "Included" },
+      { label: "Unlimited queries", value: "Included" },
+      { label: "Priority support", value: "Included" },
+    ],
+    effectiveDate: "2021-01-01T00:00:00Z",
+  },
+];
 
 export async function installIntegration(
   installationId: string,
@@ -488,16 +514,26 @@ export async function getAllBillingPlans(
   };
 }
 
+// Integration configuration IDs (icfg) that should receive custom billing plans
+const customBillingPlanConfigurations = new Set([
+  "icfg_NCoCjQOXrWIxiq8Gs78Pzhs5",
+]);
+
 export async function getInstallationBillingPlans(
   installationId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
+  // Only include custom billing plans for specific integration configurations
+  const extendedBillingPlans = customBillingPlanConfigurations.has(installationId)
+    ? billingPlans.concat(customBillingPlan)
+    : billingPlans;
+
   const resources = await listResources(installationId);
   return {
     plans:
       resources.resources.length > 2
-        ? billingPlans.filter((p) => p.paymentMethodRequired)
-        : billingPlans,
+        ? extendedBillingPlans.filter((p) => p.paymentMethodRequired)
+        : extendedBillingPlans,
   };
 }
 
