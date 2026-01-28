@@ -516,7 +516,7 @@ export async function getAllBillingPlans(
 
 // Integration configuration IDs (icfg) that should receive custom billing plans
 const customBillingPlanConfigurations = new Set([
-  "icfg_NCoCjQOXrWIxiq8Gs78Pzhs5",
+  "icfg_yj8s0WDShnPnmQnqt5BzmvWN",
 ]);
 
 export async function getInstallationBillingPlans(
