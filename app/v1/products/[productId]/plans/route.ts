@@ -9,13 +9,21 @@ interface Params {
 
 export const GET = withAuth(
   async (claims, request, { params }: { params: Params }) => {
+    const url = new URL(request.url);
+    const metadataQuery = url.searchParams.get("metadata");
+
+    console.log("[GET /v1/products/:productId/plans] Request:", {
+      productId: params.productId,
+      installationId: claims.installation_id,
+      metadata: metadataQuery,
+      claims,
+    });
+
     const response = await getProductBillingPlans(
       params.productId,
       claims.installation_id,
     );
 
-    const url = new URL(request.url);
-    const metadataQuery = url.searchParams.get("metadata");
     if (metadataQuery) {
       const metadata: Record<string, string> = JSON.parse(metadataQuery);
       if (metadata.primaryRegion === "sfo1") {
@@ -26,6 +34,9 @@ export const GET = withAuth(
         }));
       }
     }
+
+    console.log("[GET /v1/products/:productId/plans] Response:", JSON.stringify(response, null, 2));
+
     return Response.json(response);
   },
 );

@@ -8,10 +8,18 @@ interface Params {
 
 export const GET = withAuth(
   async (claims, _request, { params }: { params: Params }) => {
+    console.log("[GET /v1/installations/:installationId/resources/:resourceId/plans] Request:", {
+      installationId: claims.installation_id,
+      resourceId: params.resourceId,
+      claims,
+    });
+
     const response = await getResourceBillingPlans(
       claims.installation_id,
       params.resourceId,
     );
+
+    console.log("[GET /v1/installations/:installationId/resources/:resourceId/plans] Response:", JSON.stringify(response, null, 2));
 
     return Response.json(response);
   },
