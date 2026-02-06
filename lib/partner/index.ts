@@ -519,7 +519,7 @@ export async function getAllBillingPlans(
 
 // Opaque account ID (hashed team_id & integration_id) that should receive custom billing plans
 const customBillingPlanConfigurations = new Set([
-  "7b3388a9e6bb75dfb4969b2c8e79ea9827118884771f787fac549d0682eddd1b",
+  "2ecbea8bf3b11af8f29a847b6e8ce97b794c6fba5a9674f96547c8c0b1d34ef3",
 ]);
 
 export async function getInstallationBillingPlans(
@@ -527,6 +527,7 @@ export async function getInstallationBillingPlans(
   accountId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
+  console.log("getInstallationBillingPlans", { installationId, accountId });
   // Only include custom billing plans for specific integration configurations
   const extendedBillingPlans = customBillingPlanConfigurations.has(accountId)
     ? billingPlans.concat(customBillingPlan)
@@ -547,6 +548,7 @@ export async function getProductBillingPlans(
   accountId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
+  console.log("getProductBillingPlans", { productId: _productId, installationId, accountId });
   const extendedBillingPlans = customBillingPlanConfigurations.has(accountId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;
@@ -563,6 +565,7 @@ export async function getResourceBillingPlans(
   _resourceId: string,
   accountId: string,
 ): Promise<GetBillingPlansResponse> {
+  console.log("getResourceBillingPlans", { installationId: _installationId, resourceId: _resourceId, accountId });
   const extendedBillingPlans = customBillingPlanConfigurations.has(accountId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;
