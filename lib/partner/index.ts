@@ -508,26 +508,28 @@ function deserializeResource(serializedResource: SerializedResource): Resource {
   return { ...serializedResource, billingPlan };
 }
 
-export async function getAllBillingPlans(
-  _installationId: string,
-  _experimental_metadata?: Record<string, unknown>,
-): Promise<GetBillingPlansResponse> {
-  return {
-    plans: billingPlans,
-  };
-}
-
 // Opaque account ID (hashed team_id & integration_id) that should receive custom billing plans
 const customBillingPlanConfigurations = new Set([
   "icfg_sIwZSJkdVJNt9T42VmtF3iYD",
 ]);
 
-export async function getInstallationBillingPlans(
+export async function getAllBillingPlans(
   installationId: string,
-  accountId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
-  console.log("getInstallationBillingPlans", { installationId, accountId });
+  const extendedBillingPlans = customBillingPlanConfigurations.has(installationId)
+    ? billingPlans.concat(customBillingPlan)
+    : billingPlans;
+  return {
+    plans: extendedBillingPlans,
+  };
+}
+
+export async function getInstallationBillingPlans(
+  installationId: string,
+  _experimental_metadata?: Record<string, unknown>,
+): Promise<GetBillingPlansResponse> {
+  console.log("getInstallationBillingPlans", { installationId });
   // Only include custom billing plans for specific integration configurations
   const extendedBillingPlans = customBillingPlanConfigurations.has(installationId)
     ? billingPlans.concat(customBillingPlan)
@@ -545,10 +547,9 @@ export async function getInstallationBillingPlans(
 export async function getProductBillingPlans(
   _productId: string,
   installationId: string,
-  accountId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
-  console.log("getProductBillingPlans", { productId: _productId, installationId, accountId });
+  console.log("getProductBillingPlans", { productId: _productId, installationId });
   const extendedBillingPlans = customBillingPlanConfigurations.has(installationId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;
@@ -563,9 +564,8 @@ export async function getProductBillingPlans(
 export async function getResourceBillingPlans(
   _installationId: string,
   _resourceId: string,
-  accountId: string,
 ): Promise<GetBillingPlansResponse> {
-  console.log("getResourceBillingPlans", { installationId: _installationId, resourceId: _resourceId, accountId });
+  console.log("getResourceBillingPlans", { installationId: _installationId, resourceId: _resourceId });
   const extendedBillingPlans = customBillingPlanConfigurations.has(_installationId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;

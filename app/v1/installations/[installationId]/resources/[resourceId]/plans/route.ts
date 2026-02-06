@@ -17,7 +17,6 @@ export const GET = withAuth(
     const response = await getResourceBillingPlans(
       claims.installation_id,
       params.resourceId,
-      claims.account_id,
     );
 
     console.log("[GET /v1/installations/:installationId/resources/:resourceId/plans] Response:", JSON.stringify(response, null, 2));

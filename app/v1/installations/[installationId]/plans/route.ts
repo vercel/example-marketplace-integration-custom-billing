@@ -9,7 +9,6 @@ export const GET = withAuth(async (claims) => {
 
   const billingPlans = await getInstallationBillingPlans(
     claims.installation_id,
-    claims.account_id,
   );
 
   console.log("[GET /v1/installations/:installationId/plans] Response:", JSON.stringify(billingPlans, null, 2));
