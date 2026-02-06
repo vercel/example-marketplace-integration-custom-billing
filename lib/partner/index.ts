@@ -519,7 +519,7 @@ export async function getAllBillingPlans(
 
 // Opaque account ID (hashed team_id & integration_id) that should receive custom billing plans
 const customBillingPlanConfigurations = new Set([
-  "icfg_QrRfa62ZVhSGkymuRc6kRk6k",
+  "icfg_sIwZSJkdVJNt9T42VmtF3iYD",
 ]);
 
 export async function getInstallationBillingPlans(
