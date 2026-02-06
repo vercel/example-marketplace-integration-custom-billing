@@ -93,7 +93,7 @@ const customBillingPlan: BillingPlan[] = [
   {
     id: "custom-enterprise",
     scope: "installation",
-    name: "Enterprise Custom",
+    name: "Custom Private Offer (only you can see this, other team's won't)",
     cost: "$500/month",
     type: "subscription",
     description: "Custom enterprise plan with dedicated support",
@@ -517,17 +517,18 @@ export async function getAllBillingPlans(
   };
 }
 
-// Integration configuration IDs (icfg) that should receive custom billing plans
+// Opaque account ID (hashed team_id & integration_id) that should receive custom billing plans
 const customBillingPlanConfigurations = new Set([
-  "icfg_yj8s0WDShnPnmQnqt5BzmvWN",
+  "7b3388a9e6bb75dfb4969b2c8e79ea9827118884771f787fac549d0682eddd1b",
 ]);
 
 export async function getInstallationBillingPlans(
   installationId: string,
+  accountId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
   // Only include custom billing plans for specific integration configurations
-  const extendedBillingPlans = customBillingPlanConfigurations.has(installationId)
+  const extendedBillingPlans = customBillingPlanConfigurations.has(accountId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;
 
@@ -543,9 +544,10 @@ export async function getInstallationBillingPlans(
 export async function getProductBillingPlans(
   _productId: string,
   installationId: string,
+  accountId: string,
   _experimental_metadata?: Record<string, unknown>,
 ): Promise<GetBillingPlansResponse> {
-  const extendedBillingPlans = customBillingPlanConfigurations.has(installationId)
+  const extendedBillingPlans = customBillingPlanConfigurations.has(accountId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;
 
@@ -559,8 +561,9 @@ export async function getProductBillingPlans(
 export async function getResourceBillingPlans(
   _installationId: string,
   _resourceId: string,
+  accountId: string,
 ): Promise<GetBillingPlansResponse> {
-  const extendedBillingPlans = customBillingPlanConfigurations.has(_installationId)
+  const extendedBillingPlans = customBillingPlanConfigurations.has(accountId)
     ? billingPlans.concat(customBillingPlan)
     : billingPlans;
   return { plans: extendedBillingPlans };

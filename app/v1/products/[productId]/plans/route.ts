@@ -22,6 +22,7 @@ export const GET = withAuth(
     const response = await getProductBillingPlans(
       params.productId,
       claims.installation_id,
+      claims.account_id,
     );
 
     if (metadataQuery) {
